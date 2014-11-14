@@ -1,0 +1,62 @@
+CREATE TABLE author (id_author INT PRIMARY KEY,name_author VARCHAR(255) NOT NULL);
+CREATE TABLE category (id_category INT PRIMARY KEY,name_category VARCHAR(255) NOT NULL);
+CREATE TABLE publishing (id_publishing INT PRIMARY KEY,name_publishing VARCHAR(255) NOT NULL);
+CREATE TABLE client (id_client INT PRIMARY KEY,name_client VARCHAR(255) NOT NULL, email VARCHAR(255), phone_number VARCHAR(11));
+CREATE TABLE export (id_export INT PRIMARY KEY, type_export VARCHAR(15) NOT NULL, cost_export DECIMAL(5,2));
+CREATE TABLE status_buy (id_status_buy INT PRIMARY KEY, name_status_buy VARCHAR(255) NOT NULL);
+CREATE TABLE orders (id_order INT PRIMARY KEY, id_client int references client (id_client), id_book int references book (id_book), id_status_buy int references status_buy(id_status_buy), export int references export (id_export));
+CREATE TABLE book (id_book INT PRIMARY KEY, name_book varchar(255) not null, id_publishing int references publishing (id_publishing), rating decimal(2,1), cost decimal(6,2) not null);
+CREATE TABLE book_categories (id_book int references book (id_book), id_category int references category (id_category) );
+CREATE TABLE authors_book (id_book int references book (id_book), id_author int references author (id_author));
+CREATE TABLE review (id_review INT PRIMARY KEY,text_review VARCHAR(255) NOT NULL, id_book int references book(id_book));
+CREATE TABLE reader (id_reader INT PRIMARY KEY,name_reader VARCHAR(255) NOT NULL, id_review int references review (id_review));
+CREATE TABLE interesting_book (id_book int references book (id_book), id_client int references client(id_client));
+CREATE TABLE similar_book (id_book1 int references book (id_book), id_book2 int references book (id_book));
+
+insert into author values(1, 'Stiven King');
+insert into author values(2, 'Remark');
+insert into author values(3, 'Bulgakov');
+
+insert into category values(1, 'Classic');
+insert into category values(2, 'Horror');
+insert into category values(3, 'Novel');
+
+insert into publishing values(1, 'Moscow');
+insert into publishing values(2, 'Peter');
+insert into publishing values(3, 'Art Studio');
+
+insert into client values(1, 'Baburkina Nastya', 'baburkinanastya@gmail.com', '89112345678');
+insert into client values(2, 'Baburkina Katya', 'baburkinakatya@gmail.com', '89112345679');
+insert into client values(3, 'Petrova Nastya', 'retrovanastya@gmail.com', '89512345678');
+
+insert into export values(1, 'Samovivoz', '0');
+insert into export values(2, 'Dostavka', '400');
+
+insert into status_buy values(1, 'Polucheno');
+insert into status_buy values(2, 'Gotov');
+
+insert into book values(1, 'Master i Margarita', 2, 10, 345);
+insert into book values(2, 'Zhizn v zaimi', 1, 9, 400);
+insert into book values(3, 'Ono', 3, 10, 500);
+
+insert into book_categories values(1, 1);
+insert into book_categories values(1, 3);
+insert into book_categories values(2, 3);
+insert into book_categories values(3, 2);
+
+insert into authors_book values(1, 3);
+insert into authors_book values(2, 2);
+insert into authors_book values(3, 1);
+
+insert into review values(1, 'Book is cool', 1);
+insert into review values(2, 'Book is nice', 2);
+insert into review values(3, 'Book is good', 1);
+
+insert into reader values(1, 'Durnev', 1);
+insert into reader values(2, 'Durneva', 2);
+insert into reader values(3, 'Bublikov', 3);
+
+insert into orders values(1, 1, 1, 2, 1);
+insert into orders values(2, 2, 3, 2, 1);
+insert into orders values(3, 3, 2, 2, 1);
+
