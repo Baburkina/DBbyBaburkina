@@ -1,0 +1,38 @@
+select * from book;
+select *from book, author;
+select *from book, author where author.name_author like '% King'; 
+select *from export where export.cost_export between 100 and 500; 
+select *from export where export.cost_export not between 100 and 500; 
+select *from book_categories where book_categories.id_category in (1,3); 
+select *from export where export.cost_export < 500; 
+select *from book where book.rating  > 9 and book.cost < 400;
+select max(book.rating), min(book.cost), min(book.cost)/10 from book;
+select  * from book order by book.rating, book.cost;
+select  sum(book.cost) from book;
+select  count(book.cost) from book;
+select  book_categories.id_book, category.name_category from book_categories, category where book_categories.id_category=category.id_category;
+select  book_categories.id_category, book.name_book, book.name_book from book_categories, book where book_categories.id_book=book.id_book;
+select book_categories.id_book, count(book_categories.id_category) from book_categories group by book_categories.id_book having count(book_categories.id_category) > 1;
+select publishing.name_publishing from publishing where publishing.id_publishing in (select book.id_publishing from book where book.name_book = 'Master i Margarita');
+insert into author values(1, 'Stiven King');
+insert into category values(3, 'Novel');
+insert into publishing values(1, 'Moscow');
+insert into export values(1, 'Samovivoz', '0');
+update orders set orders.export=1, orders.id_status_buy=2  where orders.id_book=1;
+delete from book where book.cost in (select max(book.cost) from book);
+delete from category where category.id_category not in (select book_categories.id_category from book_categories, category where book_categories.id_category=category.id_category);
+ 
+
+select first 10 publishing.name_publishing, count(orders.id_book) from orders inner join book on orders.id_book = book.id_book inner join publishing on book.id_publishing= publishing.id_publishing  group by publishing.name_publishing order by count(orders.id_book) desc;
+select category.name_category, sum(book.cost) as summa from (((orders inner join book on orders.id_book = book.id_book) inner join book_categories on book.id_book= book_categories.id_book) inner join category on book_categories.id_category=category.id_category) where date_order between '10.01.2014' and '15.01.2014' group by name_category;
+delete from orders where orders.id_status_buy = 3 and orders.date_order < '16.01.2014';
+CREATE VIEW my_view (publish, summa) AS select first 10 publishing.name_publishing, count(orders.id_book) from orders inner join book on orders.id_book = book.id_book inner join publishing on book.id_publishing= publishing.id_publishing  group by publishing.name_publishing order by count(orders.id_book) desc;
+CREATE VIEW my_view2 (categ, summa) AS select category.name_category, sum(book.cost) as summa from (((orders inner join book on orders.id_book = book.id_book) inner join book_categories on book.id_book= book_categories.id_book) inner join category on book_categories.id_category=category.id_category) where date_order between '10.01.2014' and '15.01.2014' group by name_category;
+
+create or alter procedure del_str (X date)
+as
+begin
+  delete from orders where orders.id_status_buy = 3 and orders.date_order < :X;
+end
+EXECUTE PROCEDURE  del_str ('20.01.2014');
+
