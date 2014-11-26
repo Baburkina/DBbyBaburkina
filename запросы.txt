@@ -23,12 +23,11 @@ delete from book where book.cost in (select max(book.cost) from book);
 delete from category where category.id_category not in (select book_categories.id_category from book_categories, category where book_categories.id_category=category.id_category);
  
 
-select first 10 publishing.name_publishing, count(orders.id_book) from orders inner join book on orders.id_book = book.id_book inner join publishing on book.id_publishing= publishing.id_publishing  group by publishing.name_publishing order by count(orders.id_book) desc;
-select category.name_category, sum(book.cost) as summa from (((orders inner join book on orders.id_book = book.id_book) inner join book_categories on book.id_book= book_categories.id_book) inner join category on book_categories.id_category=category.id_category) where date_order between '10.01.2014' and '15.01.2014' group by name_category;
+select first 10 publishing.name_publishing, count(order_books.id_book) from order_books inner join book on order_books.id_book = book.id_book inner join publishing on book.id_publishing= publishing.id_publishing group by publishing.name_publishing ;
+select  category.name_category, sum(order_books.cost_in_order) from orders inner join order_books on orders.id_order = order_books.id_order inner join book on order_books.id_book = book.id_book inner join book_categories on book.id_book= book_categories.id_book inner join category on book_categories.id_category=category.id_category where date_order between '30.11.2014' and '30.12.2014' group by category.name_category;
 delete from orders where orders.id_status_buy = 3 and orders.date_order < '16.01.2014';
-CREATE VIEW my_view (publish, summa) AS select first 10 publishing.name_publishing, count(orders.id_book) from orders inner join book on orders.id_book = book.id_book inner join publishing on book.id_publishing= publishing.id_publishing  group by publishing.name_publishing order by count(orders.id_book) desc;
-CREATE VIEW my_view2 (categ, summa) AS select category.name_category, sum(book.cost) as summa from (((orders inner join book on orders.id_book = book.id_book) inner join book_categories on book.id_book= book_categories.id_book) inner join category on book_categories.id_category=category.id_category) where date_order between '10.01.2014' and '15.01.2014' group by name_category;
-
+CREATE VIEW my_view (publish, summa) AS select first 10 publishing.name_publishing, count(orders.id_book) from orders inner join book on orders.id_book = book.id_book inner join publishing on book.id_publishing= publishing.id_publishing  group by publishing.name_publishing order by count(orders.id_book);
+CREATE VIEW my_view2 (categ, summa) AS select  category.name_category, sum(order_books.cost_in_order) from orders inner join order_books on orders.id_order = order_books.id_order inner join book on order_books.id_book = book.id_book inner join book_categories on book.id_book= book_categories.id_book inner join category on book_categories.id_category=category.id_category where date_order between '30.11.2014' and '30.12.2014' group by category.name_category;
 create or alter procedure del_str (X date)
 as
 begin
