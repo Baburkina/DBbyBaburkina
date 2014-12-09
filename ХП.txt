@@ -1,0 +1,43 @@
+//первая ХП
+create or alter procedure sale_client (sum_ord decimal(6,2), X1 date, X2 date, sale integer)
+as
+declare variable id_cl integer;
+begin
+for select  client.id_client from orders inner join order_books on orders.id_order = order_books.id_order inner join client on client.id_client= orders.id_client
+where date_order between :X1 and :X2
+group by client.id_client
+having sum(order_books.cost_in_order) > :sum_ord
+into :id_cl
+do
+begin
+update client set client.sale= :sale
+where  client.id_client= :id_cl;
+end
+end
+
+//вторая ХП
+create or alter procedure categ_proc ( X1 date, X2 date)
+returns (name_cat integer, summ_prod decimal(10,2))
+as
+begin
+for select category.id_category, sum(order_books.cost_in_order*order_books.num_book) from orders inner join order_books on orders.id_order = order_books.id_order
+inner join book_categories on order_books.id_book= book_categories.id_book
+inner join category on book_categories.id_category=category.id_category
+where date_order between :X1 and :X2
+group by category.id_category
+into :name_cat, :summ_prod
+do
+suspend;
+end
+
+//третья ХП
+create or alter procedure pub_proc
+returns (name_pub integer, rat decimal(2,2), summ_prod decimal(10,2))
+as
+begin
+for select  book.id_publishing, avg(book.rating),  sum(order_books.cost_in_order) from order_books inner join book on order_books.id_book = book.id_book
+group by book.id_publishing
+into :name_pub, :rat, :summ_prod
+do
+    SUSPEND;
+end
