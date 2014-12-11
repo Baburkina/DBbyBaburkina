@@ -1,0 +1,70 @@
+CREATE TRIGGER TBI_CLIENTS FOR CLIENT
+ACTIVE BEFORE INSERT POSITION 0 
+AS 
+  BEGIN 
+    NEW.ID_CLIENT = GEN_ID(generatorname, 1);
+  END
+
+create OR ALTER trigger UPDATE_DATE for publishing
+active after update position 0
+as
+begin
+update book set book.id_publishing=new.id_publishing where book.id_publishing=old.id_publishing;
+end
+
+create OR ALTER trigger delete_date for publishing
+active before delete position 0
+as
+begin
+delete from book where book.id_publishing=old.id_publishing;
+end
+
+
+create OR ALTER trigger add_present for orders
+active after insert position 0
+as
+declare variable id_cl integer;
+declare variable pres_book_id integer;
+begin
+for select  client.id_client from orders inner join order_books on orders.id_order = order_books.id_order
+inner join client on client.id_client= orders.id_client
+where date_order between '30.11.2014' and '30.12.2014'
+group by client.id_client
+having sum(order_books.cost_in_order) > 1000
+into :id_cl
+do
+begin
+    select first 1 authors_book.id_book from authors_book where authors_book.id_author =(
+    select first 1 authors_book.id_author from orders inner join order_books on orders.id_order=order_books.id_order
+    inner join authors_book on order_books.id_book=authors_book.id_book
+    where orders.id_client=:id_cl
+    group by authors_book.id_author
+    order by count(authors_book.id_author) desc  )
+    into :pres_book_id ;
+    if( (select orders.id_client from orders where  orders.id_client = :id_cl and id_order=new.id_order)is not null) then
+    begin
+        insert into order_books values (new.id_order, :pres_book_id , 0, 1);
+    end
+end
+end
+
+
+create exception ABORT_DELETE_ORDER 'You cant delete this order! Order send.';
+
+create or alter procedure fail_proc
+as
+begin
+    exception ABORT_DELETE_ORDER;
+end
+
+create OR ALTER trigger abort_del for orders
+active before delete or update position 0
+as
+begin
+if( (select orders.id_status_buy from orders
+where orders.id_order=old.id_order)=4) then
+begin
+  execute procedure fail_proc;
+  end
+end
+
