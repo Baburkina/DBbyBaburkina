@@ -1,0 +1,14 @@
+1. set transaction isolation level read committed;
+2.update order_books set order_books.num_book=1000 where order_books.id_order=50385;
+1.  select * from order_books where order_books.id_order=50385;
+2. commit;
+
+1. set transaction isolation level snapshot;
+2. update order_books set order_books.num_book=2000 where order_books.id_order=50385;
+2. commit;
+1. select * from order_books where order_books.id_order=50385;
+
+1. set transaction isolation level snapshot TABLE STABILITY;
+1. update order_books set order_books.num_book=3000 where order_books.id_order=50385;
+2. update order_books set order_books.num_book=2000 where order_books.id_order=50385;
+1. commit;
