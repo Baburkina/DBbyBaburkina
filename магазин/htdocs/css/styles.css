@@ -1,0 +1,34 @@
+body{
+    !important;
+    background-color: #f9f9f9;
+}
+.navbar-shop{
+    background-color: #282828;
+    color: #888888;
+    border-radius: 0px;
+}
+.navbar-shop a{
+    color: #888888;
+}
+.pre-footer{
+    background-color: #ffffff;
+    border-left-top: #ebebeb 1px solid;
+    }
+
+footer{
+    background-color: #282828;
+    color: #888888;
+}
+
+.top-books{
+    background-color: #ea695b;
+    color: #ffffff;
+
+}
+
+.last-books{
+
+    background-color: #23b4ca;
+    color: #ffffff;
+}
+
